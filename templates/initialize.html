@@ -19,14 +19,43 @@
 <!-- <h1>Hello World!</h1> -->
 
 <body role="document">
-
 	<div class="container theme-showcase" role="main">
+			<div class="jumbotron">
 
-		<div class="jumbotron">
-			<h1>Theme example</h1>
-			<p>This is a template showcasing the optional theme stylesheet included in Bootstrap. Use it as a starting point to create something more unique by building on or modifying it.</p>
-		</div>
+				<h1 class="theme-heading">Experiment Initialization</h1>
+				<!--<p>This is a template showcasing the optional theme stylesheet included in Bootstrap. Use it as a starting point to create something more unique by building on or modifying it.</p>-->
 
+				<form class="form-horizontal" role="form">
+
+					<div class="row">
+						<div class="col-sm-6">
+							<div class="form-group has-feedback">
+								<label class="control-label col-sm-3" for="timeGroup">Time Slot:</label>
+								<div class="col-sm-9">
+									<select class="form-control" id="timeGroup" required>
+										<option>12:00 PM</option>
+										<option>2:45 PM</option>
+										<!-- NOTE THIS WILL BE POPULATED FROM THE BACKEND -->
+									</select>
+								</div>
+						    </div>
+						</div>
+						<div class="col-sm-6">
+							<div class="form-group has-feedback">
+								<label class="control-label col-sm-4" for="annotatorName">Annotator Name:</label>
+								<div class="col-sm-8">
+									<input type="text" class="form-control" id="annotatorName" required>									
+								</div>
+						    </div>
+						</div>
+					</div>
+
+					<div class="row">
+					
+					</div>
+
+				</form>
+
+			</div>
     </div> <!-- /container -->
-
 </body>

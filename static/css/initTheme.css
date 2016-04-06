@@ -16,3 +16,9 @@ body {
 .theme-showcase .navbar .container {
   width: auto;
 }
+
+.theme-heading {
+	text-align: center;
+	vertical-align: middle;
+	margin-bottom: 50px;
+}
