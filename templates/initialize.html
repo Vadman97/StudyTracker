@@ -1,22 +1,22 @@
 <!doctype html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="format-detection" content="telephone=no"/>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="X-UA-Compatible" content="IE=Edge;"/>
-<link rel="shortcut icon" href=""/>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="format-detection" content="telephone=no"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge;"/>
+	<link rel="shortcut icon" href=""/>
 
-<!-- Bootstrap core CSS -->
-<!-- not compressed<link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet"/>-->
-<link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<!-- Bootstrap theme -->
-<link href="/static/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
+	<!-- Bootstrap core CSS -->
+	<!-- not compressed<link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet"/>-->
+	<link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap theme -->
+	<link href="/static/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
 
-<link href="/static/css/initTheme.css" rel="stylesheet">
+	<link href="/static/css/initTheme.css" rel="stylesheet">
 
-<script src="jquery-2.2.3.js"> </script>
+	<script src="jquery-2.2.3.js"> </script>
 
-<title>Experiment Setup</title>
+	<title>Experiment Setup</title>
 
 </head>
 
@@ -82,29 +82,32 @@
 					<div class="row centeredBlock rowSpacing">
 						<div class="col-sm-1"></div>
 						<div class="col-sm-2">
-							<label class="control-label col-sm-5" style="text-align:left;" for="person{{ i }}Group">Group:</label>
+							<label class="control-label col-sm-5" style="text-align:left;" for="group">Group:</label>
 							<div class="col-sm-7">
-								<select class="form-control rightBlock" id="person{{ i }}Group" required>
+								<select class="form-control rightBlock" id="group" required>
 									<option>Assigned</option><option>Chosen</option>
 								</select>
 							</div>
 						</div>
 						<div class="col-sm-2">
-							<label class="control-label col-sm-7" style="text-align:left;" for="person{{ i }}Outlier">Outlier group:</label>
+							<label class="control-label col-sm-7" style="text-align:left;" for="outlier">Outlier group:</label>
 							<div class="col-sm-5">
-								<select class="form-control rightBlock" id="person{{ i }}Outlier" required>
+								<select class="form-control rightBlock" id="outlier" required>
 									<option>Yes</option><option>No</option>
 								</select>
 							</div>
 						</div>
 						<div class="col-sm-2">
-							<label class="control-label col-sm-7" style="text-align:left;" for="person{{ i }}Friendship">Friendship Level:</label>
+							<label class="control-label col-sm-7" style="text-align:left;" for="friendship">Friendship Level:</label>
 							<div class="col-sm-5">
-								<input type="number" class="form-control rightBlock" id="person{{ i }}Friendship" required autocomplete="off" min="1" max="10">
+								<input type="number" class="form-control rightBlock" id="friendship" required autocomplete="off" min="1" max="10">
 							</div>
 						</div>
 						<div class="col-sm-4">
-							LOL
+							<label class="control-label col-sm-3 leftBlock" for="person{{ i }}Age">Notes:</label>
+							<div class="col-sm-9">
+								<textarea class="form-control personEntry rightBlock" rows="5" id="notes" required autocomplete="off"></textarea>
+							</div>
 						</div>
 						<div class="col-sm-1"></div>
 					</div>
