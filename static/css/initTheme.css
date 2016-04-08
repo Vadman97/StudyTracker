@@ -1,5 +1,5 @@
 body {
-  padding-top: 70px;
+  padding-top: 10px;
   padding-bottom: 30px;
 }
 
@@ -65,4 +65,9 @@ body {
 	display: block;
 	margin-left: auto;
 	margin-right: 0;
+}
+
+.jumbotronPadding {
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
