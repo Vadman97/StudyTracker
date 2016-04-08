@@ -22,3 +22,47 @@ body {
 	vertical-align: middle;
 	margin-bottom: 50px;
 }
+
+.person {
+	height: auto;
+	width: 25%;
+}
+
+.personLabel {
+	text-align: center;
+	vertical-align: middle;
+	font-weight: bold;
+	font-size: 200%;
+	/* margin-bottom:25px; */
+	/* text styling */
+}
+
+.rowSpacing {
+	margin-top: 50px;
+}
+
+.personEntry {
+	width: 50%;
+}
+
+.inputRowSpace {
+	margin-top: 5px;
+}
+
+.centeredBlock {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.leftBlock {
+	display: block;
+	margin-left: 0;
+	margin-right: auto;
+}
+
+.rightBlock {
+	display: block;
+	margin-left: auto;
+	margin-right: 0;
+}

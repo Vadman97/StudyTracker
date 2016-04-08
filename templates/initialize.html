@@ -23,13 +23,13 @@
 <!-- <h1>Hello World!</h1> -->
 
 <body role="document">
-	<div class="container theme-showcase" role="main">
+	<div class="container-fluid theme-showcase" role="main">
 			<div class="jumbotron">
 
 				<h1 class="theme-heading">Experiment Initialization</h1>
 				<!--<p>This is a template showcasing the optional theme stylesheet included in Bootstrap. Use it as a starting point to create something more unique by building on or modifying it.</p>-->
 
-				<form class="form-horizontal" role="form">
+				<form class="form-horizontal" role="form" formmethod="post">
 
 					<div class="row">
 						<div class="col-sm-4">
@@ -48,28 +48,65 @@
 							<div class="form-group has-feedback">
 								<label class="control-label col-sm-4" for="annotatorName">Annotator Name:</label>
 								<div class="col-sm-8">
-									<input type="text" class="form-control" id="annotatorName" required>									
+									<input type="text" class="form-control" id="annotatorName" required autocomplete="off">
 								</div>
 						    </div>
 						</div>
 					</div>
 
-					<div class="row">
+					<div class="row rowSpacing">
+						<div class="col-sm-1"></div>
+						{% for i in range(1,6) %}
 						<div class="col-sm-2">
-						Person1
+							<div class="row personLabel">Person {{ i }}</div>
+							<div class="row rowSpacing"><image class="person centeredBlock" src="/static/images/person.png"></div>
+							<div class="row rowSpacing centeredBlock">
+								<label class="control-label col-sm-3 leftBlock" for="person{{ i }}Age">Age:</label>
+								<div class="col-sm-9">
+									<input type="number" class="form-control personEntry rightBlock" id="person{{ i }}Age" required autocomplete="off" min="1" max="100">
+								</div>
+							</div>
+							<div class="row centeredBlock inputRowSpace">
+								<label class="control-label col-sm-3" for="person{{ i }}Gender">Gender:</label>
+								<div class="col-sm-9">
+									<select class="form-control personEntry rightBlock" id="person{{ i }}Gender" required>
+										<option>M</option><option>F</option><option>N</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+						<div class="col-sm-1"></div> <!-- todo more elegant solution !-->
+					</div>
+
+					<div class="row centeredBlock rowSpacing">
+						<div class="col-sm-1"></div>
+						<div class="col-sm-2">
+							<label class="control-label col-sm-5" style="text-align:left;" for="person{{ i }}Group">Group:</label>
+							<div class="col-sm-7">
+								<select class="form-control rightBlock" id="person{{ i }}Group" required>
+									<option>Assigned</option><option>Chosen</option>
+								</select>
+							</div>
 						</div>
 						<div class="col-sm-2">
-						Person2
+							<label class="control-label col-sm-7" style="text-align:left;" for="person{{ i }}Outlier">Outlier group:</label>
+							<div class="col-sm-5">
+								<select class="form-control rightBlock" id="person{{ i }}Outlier" required>
+									<option>Yes</option><option>No</option>
+								</select>
+							</div>
 						</div>
 						<div class="col-sm-2">
-						Person3
+							<label class="control-label col-sm-7" style="text-align:left;" for="person{{ i }}Friendship">Friendship Level:</label>
+							<div class="col-sm-5">
+								<input type="number" class="form-control rightBlock" id="person{{ i }}Friendship" required autocomplete="off" min="1" max="10">
+							</div>
 						</div>
-						<div class="col-sm-2">
-						Person4
+						<div class="col-sm-4">
+							LOL
 						</div>
-						<div class="col-sm-2">
-						Person5
-						</div>
+						<div class="col-sm-1"></div>
 					</div>
 
 				</form>
