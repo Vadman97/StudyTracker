@@ -1,0 +1,31 @@
+<!doctype html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="format-detection" content="telephone=no"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge;"/>
+	<link rel="shortcut icon" href=""/>
+
+	<!-- not compressed<link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet"/>-->
+	<!-- 
+		/static/bootstrap/css/bootstrap.min.css 
+		/static/bootstrap/css/bootstrap-theme.min.css
+		/static/css/initTheme.css
+		/static/jquery/jquery-2.2.3.js
+	-->
+
+	<link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='bootstrap/css/bootstrap-theme.min.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/initTheme.css') }}" rel="stylesheet">
+	<script src="{{ url_for('static', filename='jquery/jquery-2.2.3.js') }}"> </script>
+ 
+	{% block head %}{% endblock %}
+
+</head>
+
+
+<body role="document">
+	<div class="container-fluid theme-showcase" role="main">
+		{% block body %}{% endblock %}
+    </div>
+</body>

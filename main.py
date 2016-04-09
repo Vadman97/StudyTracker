@@ -18,5 +18,9 @@ def test(name=None):
 def init():
 	return render_template('initialize.html')
 
+@app.route('/experiment/')
+def experiment():
+	return render_template('experiment.html')
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
