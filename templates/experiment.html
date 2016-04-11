@@ -9,22 +9,85 @@
 	<h1 class="theme-heading">Experiment Active</h1>
 
 	<div class="row">
-		<div class="col-sm-2">
-			Timer
+		<div class="col-sm-2 timerAlign">
+			<div class="row timerAlign">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title timerText">Timer</h3>
+					</div>
+					<div class="panel-body timerTime">
+						00:00
+					</div>
+				</div>
+			</div>
 		</div>
 		{% for i in range(1,6) %}
 		<div class="col-sm-2">
 			<div class="row personLabel">Person {{ i }}</div>
 			<div class="row rowSpacing"><image class="person centeredBlock" src="/static/images/person.png"></div>
+		</div>
+		{% endfor %}
+	</div>
+	<div class="row">
+		<div class="col-sm-2">
+			<div class="row rowSpacingExtra rightBlock timerAlign">
+				<div class="timerTime">
+					Engaged:
+				</div>
+			</div>
+			<div class="row rowSpacingExtra rightBlock timerAlign">
+				<div class="timerTime">
+					Using Tablet:
+				</div>
+			</div>
+		</div>
+		{% for i in range(1,6) %}
+		<div class="col-sm-2">
 			<div class="row rowSpacing centeredBlock">
 				<input type="checkbox" class="form-control centeredBlock" name="engagement" value="person{{ i }}">
 			</div>
 			<div class="row rowSpacing centeredBlock">
 				<input type="radio" class="form-control centeredBlock" name="tablet" value="person{{ i }}">
-
 			</div>
 		</div>
 		{% endfor %}
+	</div>
+	<div class="row rowSpacing">
+		<div class="col-sm-6">
+			<label class="control-label col-sm-1 leftBlock" for="notes">Notes:</label>
+			<div class="col-sm-11">
+				<textarea class="form-control centeredBlock" rows="5" id="notes" autocomplete="off"></textarea>
+			</div>
+		</div>
+		<div class="col-sm-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title timerText">Current Task</h3>
+				</div>
+				<div class="panel-body">
+					<label class="control-label col-sm-6 leftBlock" for="notes">Programming</label>
+					<div class="col-sm-6">
+						<input type="radio" class="form-control centeredBlock" name="task" value="programming">
+					</div>
+					<label class="control-label col-sm-6 leftBlock" for="notes">Strategizing</label>
+					<div class="col-sm-6">
+						<input type="radio" class="form-control centeredBlock" name="task" value="strategizing">
+					</div>
+					<label class="control-label col-sm-6 leftBlock" for="notes">Testing</label>
+					<div class="col-sm-6">
+						<input type="radio" class="form-control centeredBlock" name="task" value="testing">
+					</div>
+					<label class="control-label col-sm-6 leftBlock" for="notes">Disengaged</label>
+					<div class="col-sm-6">
+						<input type="radio" class="form-control centeredBlock" name="task" value="disengaged">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		 <!-- form="dataForm" inside button -->
+		<button type="button" class="btn btn-block btn-lg btn-primary">Done</button>
 	</div>
 </div>
 {% endblock %}

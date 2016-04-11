@@ -25,7 +25,7 @@ body {
 
 .person {
 	height: auto;
-	width: 25%;
+	width: 20%;
 }
 
 .personLabel {
@@ -39,6 +39,10 @@ body {
 
 .rowSpacing {
 	margin-top: 50px;
+}
+
+.rowSpacingExtra {
+	margin-top: 60px;
 }
 
 .personEntry {
@@ -70,4 +74,19 @@ body {
 .jumbotronPadding {
 	padding-top: 10px;
 	padding-bottom: 10px;
+}
+
+.timerAlign {
+	vertical-align: middle;
+	text-align: center;
+}
+
+.timerText {
+	font-weight: bold;
+	font-size: 200%;
+}
+
+.timerTime {
+	font-weight: bold;
+	font-size: 150%;
 }
