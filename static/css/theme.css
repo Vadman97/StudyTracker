@@ -90,3 +90,13 @@ body {
 	font-weight: bold;
 	font-size: 150%;
 }
+
+.finalTime {
+	display: inline;
+	width: 25%;
+}
+
+.colon {
+	font-weight: bold;
+	font-size: 200%;
+}

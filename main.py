@@ -1,4 +1,6 @@
 from flask import *
+import util
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -25,6 +27,15 @@ def experiment():
 @app.route('/done/')
 def done():
 	return render_template('postExperiment.html')
+
+@app.route('/setupExperiment/', methods=['POST'])
+def setupExperiment():
+	if request.method == 'POST':
+		for item in request.form:
+			print item
+		print "test" #request.form['timeGroup']
+
+	return "wat" #redirect(url_for('experiment'), code=302)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
