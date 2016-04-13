@@ -6,13 +6,26 @@
 
 {% block body %}
 
+    <div class="jumbotron jumbotronPadding">
+    <h1 class="theme-heading">Active Experiments</h1>
+
     This will have the list of active experiments (with links) and a button to /init
     <br>
     /experiment should take an id to the experiment so we can have concurrent stuff?
     <br>
-    some table
     <br>
 
-    {{ exps }}
+        <div class="row rowSpacing">
+            <ul class="list-group">
+                {% for exp in exps %}
+                <li class="list-group-item timerTime"><a href="{{ url_for('experiment', experimentID=exp|string) }}"> Experiment {{exp}} </a></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="rowSpacing">
+            <a class="btn btn-block btn-lg btn-primary" href="{{ url_for('init') }}">Setup New Experiment</a>
+        </div>
+    </div>
 
 {% endblock %}

@@ -3,6 +3,7 @@ from flask_sqlalchemy import *
 import util
 import hashlib
 import datetime
+import collections
 
 app = Flask(__name__)
 db_path = os.path.join(os.path.dirname(__file__), 'app.db')
@@ -59,7 +60,7 @@ db.create_all()
 @app.route('/')
 def index():
 	#return 'Index Page'
-	users = dict()
+	users = collections.OrderedDict()
 	exps = Experiment.query.all()
 	for u in exps:
    		users.update({u: u.__dict__})
@@ -78,9 +79,19 @@ def test(name=None):
 def init():
 	return render_template('initialize.html')
 
-@app.route('/experiment/')
-def experiment():
-	return render_template('experiment.html')
+@app.route('/experiment/<int:experimentID>')
+def experiment(experimentID=None):
+	found = False
+	#TODO REWRITE AS NOT IN QUERY 
+	# as in if experimentID not in Experiment table
+	for exp in Experiment.query.all(): 
+		if str(experimentID) is str(exp):
+			found = True
+			break;
+	if not found:
+		return redirect(url_for('index'), code=302)
+
+	return render_template('experiment.html', experiment=experimentID)
 
 @app.route('/done/')
 def done():
@@ -103,7 +114,8 @@ def setupExperiment():
 
 		db.session.commit()
 
-	return redirect(url_for('experiment'), code=302) #TODO should forward to specific experiment with id
+	# return redirect(url_for('experiment'), code=302) #TODO should forward to specific experiment with id
+	return redirect(url_for('index'), code=302)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=5000)
