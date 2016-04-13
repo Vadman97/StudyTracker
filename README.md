@@ -23,4 +23,5 @@ Write HTML files first and then worry about converting them to templates with in
 Running server
 ----------------
 ```python main.py```
+
 Note: Flask must be installed - ```sudo apt-get install -y python-pip && sudo pip install Flask && sudo pip install flask_sqlalchemy```
