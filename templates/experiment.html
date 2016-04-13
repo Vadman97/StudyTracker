@@ -87,7 +87,9 @@
 	</div>
 	<div class="row">
 		 <!-- form="dataForm" inside button -->
-		<button type="button" class="btn btn-block btn-lg btn-primary">Done</button>
+		<div class="rowSpacing">
+            <a class="btn btn-block btn-lg btn-primary" href="{{ url_for('done', experimentID=experiment) }}">Done</a>
+        </div>
 	</div>
 </div>
 {% endblock %}
