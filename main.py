@@ -5,7 +5,8 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-	return 'Index Page'
+	#return 'Index Page'
+	return render_template('index.html')
 
 @app.route('/static/<path:path>')
 def send_js(path):
