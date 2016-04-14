@@ -7,11 +7,12 @@
 
 {% block body %}
 
-<div class="modal fade" id="startModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+{% if exp["status"] == "Created" %}
+<div class="modal fade" id="startModal" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
         <h4 class="modal-title timerText" id="myModalLabel">Ready to start the experiment!</h4>
       </div>
       <div class="modal-body timerText">
@@ -25,6 +26,7 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 <div class="jumbotron jumbotronPadding">
 	<h1 class="theme-heading">Experiment Active</h1>

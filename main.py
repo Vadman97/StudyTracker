@@ -11,7 +11,7 @@ db_path = os.path.join(os.path.dirname(__file__), 'app.db')
 db_uri = 'sqlite:///{}'.format(db_path)
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = False
 
 db = SQLAlchemy(app)
 
@@ -92,7 +92,7 @@ class PostExperimentData(db.Model):
 	notes = db.Column(db.String(2048))
 
 	def __init__(self, finalTimeMins, finalTimeSecs, rankNum, rankDenom, solved, howMuchSolved, notes, experiment):
-		self.finalTime = datetime.datetime.strptime(str(int(finalTimeMins) * 60 + int(finalTimeSecs)) , "%M").time()
+		self.finalTime = datetime.datetime.strptime(str(finalTimeMins) + " " + str(finalTimeSecs) , "%M %S").time()
 		self.rankNum = rankNum
 		self.rankDenom = rankDenom
 		self.solved = True if (solved == "Yes") else False
@@ -148,26 +148,47 @@ def experiment(experimentID=None):
 @app.route('/done/<int:experimentID>', methods=['GET', 'POST'])
 def done(experimentID=None):
 	if (request.method == 'GET'):
+		if Experiment.query.filter_by(id=experimentID).count() == 0:
+			return redirect(url_for('index'), code=302)
+
 		return render_template('postExperiment.html', experiment=experimentID)
-	else:
+	elif request.method == 'POST':
+		if "notes" not in request.form:
+			request.form["notes"] = ""
+
+		if "howMuchSolved" not in request.form:
+			request.form["howMuchSolved"] = ""
+
 		try:
-			exp = Experiment.query.filter_by(id=experimentID).first()
-			data = PostExperimentData(request.form["finalTimeMins"], request.form["finalTimeSecs"], request.form["rankNum"], request.form["group"], 
-			request.form["rankDenom"], request.form["solved"], request.form["howMuchSolved"], request.form["notes"], exp)
+			exp = Experiment.query.filter_by(id=experimentID)
+			exp.update({Experiment.status:"Done"})
+			exp = exp.first()
+			data = PostExperimentData(request.form["finalTimeMins"], request.form["finalTimeSecs"], request.form["rankNum"], 
+				request.form["rankDenom"], request.form["solved"], request.form["howMuchSolved"], request.form["notes"], exp)
+			db.session.add(data)
+			db.session.commit()
 		except KeyError, e:
 			print "ERROR done form missing keys: %s" % e
 			return redirect(url_for('index'), code=302)
 
-		db.session.add(data)
-		db.session.commit()
-
 		return redirect(url_for('index'), code=302)
+
+@app.route('/data/<int:experimentID>', methods=['POST'])
+def data(experimentID=None):
+	if Experiment.query.filter_by(id=experimentID).count() == 0:
+		return
+
+
+
+	return
 
 @app.route('/setupExperiment/', methods=['POST'])
 def setupExperiment():
 	if request.method == 'POST':
 		#for item in request.form:
 		#	print item + " " + request.form[item]
+		if "notes" not in request.form:
+			request.form["notes"] = ""
 
 		try:
 			exp = Experiment(request.form["experimentName"], request.form["timeGroup"], request.form["annotatorName"], request.form["group"], 
