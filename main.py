@@ -152,7 +152,7 @@ def done(experimentID=None):
 	else:
 		try:
 			exp = Experiment.query.filter_by(id=experimentID).first()
-			data = Experiment(request.form["finalTimeMins"], request.form["finalTimeSecs"], request.form["rankNum"], request.form["group"], 
+			data = PostExperimentData(request.form["finalTimeMins"], request.form["finalTimeSecs"], request.form["rankNum"], request.form["group"], 
 			request.form["rankDenom"], request.form["solved"], request.form["howMuchSolved"], request.form["notes"], exp)
 		except KeyError, e:
 			print "ERROR done form missing keys: %s" % e
@@ -170,7 +170,7 @@ def setupExperiment():
 		#	print item + " " + request.form[item]
 
 		try:
-			exp = PostExperimentData(request.form["experimentName"], request.form["timeGroup"], request.form["annotatorName"], request.form["group"], 
+			exp = Experiment(request.form["experimentName"], request.form["timeGroup"], request.form["annotatorName"], request.form["group"], 
 			request.form["outlier"], request.form["friendship"], request.form["notes"])
 		except KeyError, e:
 			print "ERROR setupExperiment form missing keys: %s" % e
