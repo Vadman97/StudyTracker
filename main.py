@@ -4,6 +4,7 @@ import util
 import hashlib
 import datetime
 import collections
+import subprocess
 
 app = Flask(__name__)
 db_path = os.path.join(os.path.dirname(__file__), 'app.db')
@@ -77,9 +78,13 @@ class PostExperimentData(db.Model):
 
 db.create_all()
 
-@app.route('/static/<path:path>')
-def send_js(path):
-	return send_from_directory('static', path)
+#@app.route('/static/<path:path>')
+#def send_js(path):
+#	return send_from_directory('static', path)
+
+@app.route('/gitupdate/')
+def git():
+	subprocess.call(["git", "pull"])
 
 @app.route('/')
 def index():
@@ -133,4 +138,4 @@ def setupExperiment():
 	return redirect(url_for('index'), code=302)
 
 if __name__ == '__main__':
-	app.run(host='0.0.0.0', debug=True, port=5000)
+	app.run(host='0.0.0.0', debug=True, port=7878)
