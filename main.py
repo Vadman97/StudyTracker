@@ -107,8 +107,10 @@ db.create_all()
 
 @app.route('/gitupdate/')
 def git():
-	subprocess.call(["git", "pull"])
-	return "OK!"
+	return subprocess.Popen('ls -lsah', cwd='/var/interactionlab')
+	return str(subprocess.check_output(["ls", "-lsah"]))
+	return str(subprocess.check_output(["git", "pull"]))
+	# return "OK!"
 
 @app.route('/')
 def index():
