@@ -107,7 +107,7 @@ db.create_all()
 
 @app.route('/gitupdate/')
 def git():
-	return subprocess.Popen('ls -lsah', cwd='/var/interactionlab')
+	return subprocess.Popen(["git", "pull"], cwd='/var/interactionlab')
 	return str(subprocess.check_output(["ls", "-lsah"]))
 	return str(subprocess.check_output(["git", "pull"]))
 	# return "OK!"
@@ -171,4 +171,4 @@ def setupExperiment():
 	return redirect(url_for('index'), code=302)
 
 if __name__ == '__main__':
-	app.run(host='0.0.0.0', debug=True, port=7878)
+	app.run(host='0.0.0.0', debug=True, port=8878)
