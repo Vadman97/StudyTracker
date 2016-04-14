@@ -18,24 +18,27 @@ db = SQLAlchemy(app)
 class Experiment(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	# hash = db.Column(db.String(64))
+	name = db.Column(db.String(64))
 	timeGroup = db.Column(db.Time())
 	annotatorName = db.Column(db.String(64))
 	group = db.Column(db.String(10))
 	outlier = db.Column(db.String(1))
 	friendship = db.Column(db.Integer)
 	notes = db.Column(db.String(2048))
+	status = db.Column(db.String(20))
 
-	def __init__(self, timeGroup, annotatorName, group, outlier, friendship, notes):
+	def __init__(self, name, timeGroup, annotatorName, group, outlier, friendship, notes):
 		# m = hashlib.sha512()
 		# m.update(str(id))
 		# self.hash = m.hexdigest()
-
+		self.name = name
 		self.timeGroup = datetime.datetime.strptime(timeGroup, "%I:%M %p").time()
 		self.annotatorName = annotatorName
 		self.group = group
 		self.outlier = outlier
 		self.friendship = friendship
 		self.notes = notes
+		self.status = "Created" #or Running or Done
 
 	def __repr__(self):
 		return str(self.id)
@@ -56,6 +59,25 @@ class Person(db.Model):
 	def __repr__(self):
 		return str(self.id)
 
+class PersonStatus(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	timestamp = db.Column(db.DateTime)
+	engaged = db.Column(db.Boolean)
+	usingTablet = db.Column(db.Boolean)
+	currentTask = db.Column(db.String(20))
+	
+	personID = db.Column(db.Integer, db.ForeignKey('person.id'))
+	person = db.relationship('Person', backref=db.backref('personStatuses', lazy='dynamic'))
+
+	def __init__(self, engaged, usingTablet, currentTask):
+		self.timestamp = datetime.datetime()
+		self.engaged = engaged
+		self.usingTabled = usingTablet
+		self.currentTask = currentTask
+
+	def __repr__(self):
+		return str(self.id)
+
 class PostExperimentData(db.Model):
 	id = db.Column(db.Integer, primary_key=True)	
 	experimentID = db.Column(db.Integer, db.ForeignKey('experiment.id'))
@@ -64,13 +86,14 @@ class PostExperimentData(db.Model):
 	finalTime = db.Column(db.Time)
 	rank = db.Column(db.String(32))
 	solvedMaze = db.Column(db.String(3))
-	#TODO if not solved, string for where they got
+	howMuchSolved = db.Column(db.String(100))
 	notes = db.Column(db.String(2048))
 
-	def __init__(self, finalTime, rank, solvedMaze, notes):
+	def __init__(self, finalTime, rank, solvedMaze, howMuchSolved, notes):
 		self.finalTime = finalTime
 		self.rank = rank
 		self.solvedMaze = solvedMaze
+		self.howMuchSolved = howMuchSolved
 		self.notes = notes
 
 	def __repr__(self):
@@ -90,7 +113,7 @@ def git():
 def index():
 	#return 'Index Page'
 	users = collections.OrderedDict()
-	exps = Experiment.query.all()
+	exps = Experiment.query.filter(Experiment.status != "Done").all()
 	for u in exps:
    		users.update({u: u.__dict__})
 	return render_template('index.html', exps=users)
@@ -113,9 +136,13 @@ def experiment(experimentID=None):
 
 	return render_template('experiment.html', experiment=experimentID)
 
-@app.route('/done/<int:experimentID>')
+@app.route('/done/<int:experimentID>', methods=['GET', 'POST"'])
 def done(experimentID=None):
-	return render_template('postExperiment.html', experiment=experimentID)
+	if (request.method == 'GET'):
+		return render_template('postExperiment.html', experiment=experimentID)
+	else:
+
+		return redirect(url_for('index'), code=302)
 
 @app.route('/setupExperiment/', methods=['POST'])
 def setupExperiment():
@@ -123,8 +150,11 @@ def setupExperiment():
 		for item in request.form:
 			print item + " " + request.form[item]
 
-		exp = Experiment(request.form["timeGroup"], request.form["annotatorName"], request.form["group"], 
+		try:
+			exp = Experiment(request.form["experimentName"], request.form["timeGroup"], request.form["annotatorName"], request.form["group"], 
 			request.form["outlier"], request.form["friendship"], request.form["notes"])
+		except KeyError, e:
+			return redirect(url_for('index'), code=302)
 
 		db.session.add(exp)
 

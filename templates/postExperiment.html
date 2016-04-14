@@ -6,42 +6,52 @@
 
 {% block body %}
 <div class="jumbotron jumbotronPadding">
-	<h1 class="theme-heading">Team Results</h1>
-	<div class="row">
-		<div class="col-sm-6">
-			<label class="control-label col-sm-2 leftBlock timerTime" style="padding-left: 0">Time:</label>
-			<div class="col-sm-10">
-				<input type="number" class="form-control personEntry centerBlock finalTime" id="finalTimeMins" required autocomplete="off" min="0" max="60">
-				<span class="colon"> : </span>
-				<input type="number" class="form-control personEntry centerBlock finalTime" id="finalTimeSec" required autocomplete="off" min="0" max="60">
+	<form class="form-horizontal" role="form" id="postExpForm" method="post" action="{{ url_for('done', experimentID=experiment) }}" autocomplete="off">
+		<h1 class="theme-heading">Team Results</h1>
+		<div class="row">
+			<div class="col-sm-6">
+				<label class="control-label col-sm-2 leftBlock timerTime" style="padding-left: 0">Time:</label>
+				<div class="col-sm-10">
+					<input type="number" class="form-control personEntry centerBlock finalTime" id="finalTimeMins" required autocomplete="off" min="0" max="60">
+					<span class="colon"> : </span>
+					<input type="number" class="form-control personEntry centerBlock finalTime" id="finalTimeSec" required autocomplete="off" min="0" max="60">
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<label class="control-label col-sm-2 leftBlock timerTime" style="padding-left: 0">Rank:</label>
+				<div class="col-sm-10">
+					<input type="number" class="form-control personEntry centerBlock finalTime" id="rankNum" required autocomplete="off" min="1" max="1000">
+					<span class="colon"> / </span>
+					<input type="number" class="form-control personEntry centerBlock finalTime" id="rankDenom" required autocomplete="off" min="1" max="1000">
+				</div>
 			</div>
 		</div>
-		<div class="col-sm-6">
-			<label class="control-label col-sm-2 leftBlock timerTime" style="padding-left: 0">Rank:</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control rightBlock" id="rank" required autocomplete="off">
+		<div class="row rowSpacing">
+			<div class="col-sm-6">
+				<label class="control-label col-sm-4 leftBlock timerTime" style="padding-left: 0">Solved Maze:</label>
+				<div class="col-sm-8">
+					<select class="form-control personEntry leftBlock" id="solved" required>
+						<option>Yes</option><option>No</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<label class="control-label col-sm-4 leftBlock timerTime" style="padding-left: 0">Completed:</label>
+				<div class="col-sm-8">
+					<input type="text" class="form-control leftBlock" id="howMuchSolved" autocomplete="off">
+				</div>
+			</div>
+			<!-- TODO if the users choses no, entry field for how far they got -->
+		</div>
+		<div class="row rowSpacing">
+		<label class="control-label col-sm-1 leftBlock" for="notes">Notes:</label>
+			<div class="col-sm-11">
+				<textarea class="form-control centeredBlock" rows="5" id="notes" autocomplete="off"></textarea>
 			</div>
 		</div>
-	</div>
-	<div class="row rowSpacing">
-		<div class="col-sm-6">
-			<label class="control-label col-sm-4 leftBlock timerTime" style="padding-left: 0">Solved Maze:</label>
-			<div class="col-sm-8">
-				<select class="form-control personEntry leftBlock" id="solved" required>
-					<option>Yes</option><option>No</option>
-				</select>
-			</div>
+		<div class="row rowSpacing">
+			<button type="submit" class="btn btn-block btn-lg btn-primary">Submit</button>
 		</div>
-		<!-- TODO if the users choses no, entry field for how far they got -->
-	</div>
-	<div class="row rowSpacing">
-	<label class="control-label col-sm-1 leftBlock" for="notes">Notes:</label>
-		<div class="col-sm-11">
-			<textarea class="form-control centeredBlock" rows="5" id="notes" autocomplete="off"></textarea>
-		</div>
-	</div>
-	<div class="row rowSpacing">
-		<button type="button" class="btn btn-block btn-lg btn-primary">Submit</button>
-	</div>
+	</form>
 </div>
 {% endblock %}

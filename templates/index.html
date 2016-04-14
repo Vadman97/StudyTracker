@@ -11,7 +11,7 @@
         <div class="row rowSpacing">
             <ul class="list-group">
                 {% for exp in exps %}
-                <li class="list-group-item timerTime"><a href="{{ url_for('experiment', experimentID=exp|string) }}"> Experiment {{exp}} </a></li>
+                <li class="list-group-item timerTime"><a href="{{ url_for('experiment', experimentID=exp|string) }}"> Experiment: {{exps[exp]["name"]}} </a></li>
                 {% endfor %}
             </ul>
         </div>

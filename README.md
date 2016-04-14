@@ -21,6 +21,22 @@ Timer will keep track of experiment (poll/sockets to find out when end?) duratio
 
 Write HTML files first and then worry about converting them to templates with inheritance: http://flask.pocoo.org/docs/0.10/patterns/templateinheritance/
 
+DONE 8:30-3 every 15 mins
+DONE experiment name
+DONE name on index page
+
+one person has a start button to start data collection
+DONE all engaged on experiment window
+
+each person individually clicks done
+
+rank blank out of / blank
+results submit
+
+layout of experiment.html for tablet/small laptop
+
+if not solved, string for where they got
+
 Running server
 ----------------
 ```python main.py```
