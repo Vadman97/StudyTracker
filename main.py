@@ -173,14 +173,32 @@ def done(experimentID=None):
 
 		return redirect(url_for('index'), code=302)
 
-@app.route('/data/<int:experimentID>', methods=['POST'])
-def data(experimentID=None):
+
+@app.route('/data/<int:experimentID>/<string:action>', methods=['GET', 'POST'])
+def data(experimentID=None, action=None):
 	if Experiment.query.filter_by(id=experimentID).count() == 0:
-		return
+		return "BAD"
 
+	if action == "start":
+		exp = Experiment.query.filter_by(id=experimentID)
+		exp.update({Experiment.status:"Running"})
+		db.session.commit()
 
+	if action == "poll":
+		exp = Experiment.query.filter_by(id=experimentID)
+		return str({"status": exp.first().__dict__["status"]})
+		person = Person.query.filter_by(experimentID=experimentID).first().__dict__
+		print person
+		oldestPersonStatus = PersonStatus.query.filter_by(personID=person["id"]).order_by(PersonStatus.timestamp.asc()).first()
+		#exp.first().__dict__
+		if oldestPersonStatus != None:
+			return str({"status": exp.first().__dict__["status"], "ts": oldestPersonStatus.__dict__["timestamp"]})
 
-	return
+	if action == "push":
+		for item in request.form:
+			print item + " " + str(request.form.getlist(item))
+
+	return "OK"
 
 @app.route('/setupExperiment/', methods=['POST'])
 def setupExperiment():

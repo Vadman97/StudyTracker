@@ -30,12 +30,18 @@ DONE all engaged on experiment window
 
 each person individually clicks done
 
-rank blank out of / blank
-results submit
+DONE rank blank out of / blank
+DONE results submit
 
 layout of experiment.html for tablet/small laptop
 
-if not solved, string for where they got
+DONE if not solved, string for where they got
+^ dont show the text field unless they chose False for solved
+
+/checkState/expID --> return json status and time of start if enabled
+/start/expID
+
+upon loading experiment.html, load the start time of experiment with respect to now
 
 Running server
 ----------------

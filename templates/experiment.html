@@ -3,6 +3,110 @@
 {% block head %}
 <title>Experiment</title>
 <script src="{{ url_for('static', filename='js/experiment.js') }}"></script>
+<script>
+	$.fn.serializeObject = function()
+	{
+	    var o = {};
+	    var a = this.serializeArray();
+	    $.each(a, function() {
+	        if (o[this.name] !== undefined) {
+	            if (!o[this.name].push) {
+	                o[this.name] = [o[this.name]];
+	            }
+	            o[this.name].push(this.value || '');
+	        } else {
+	            o[this.name] = this.value || '';
+	        }
+	    });
+	    return o;
+	};
+	function pushData()
+	{
+		$.ajax({
+			type: "POST",
+			url: "{{ url_for('data', experimentID=experiment, action='push') }}",
+			data: $('#dataForm').serializeObject()
+		});
+	}
+
+	var active = false;
+	var timeSet = false;
+
+	{% if exp["status"] == "Running" %}
+		active = true;
+	{% endif %}
+
+	$( document ).ready(function () {
+	    $('#startModal').modal('show');
+
+	    $('#startExpButton').click(function() {
+	        $.ajax({
+			    type: 'POST',
+			    url: "{{ url_for('data', experimentID=experiment, action='start') }}",
+			    data: { 
+			        'start': true, 
+			    },
+			    success: function(msg){
+			    	active = true;
+			    }
+			});
+
+
+	        $('#startModal').modal('hide');
+	    });
+
+	    $('#dataForm').change(function() {
+			pushData();
+	    });
+
+	    (function(){
+		    //timer update
+		    var mins = parseInt($('#mins').html());
+		    var secs = parseInt($('#secs').html());
+
+		    secs++;
+		    if (secs >= 60)
+		    {
+		    	secs = 0;
+		    	mins++;
+		    }
+		    var minsText = mins.toString();
+		    var secsText = secs.toString();
+		    if (mins < 10)
+		    	minsText = "0" + minsText;
+		    if (secsText < 10)
+		    	secsText = "0" + secsText;
+
+		    $('#mins').html(minsText);
+		    $('#secs').html(secsText);
+
+		    setTimeout(arguments.callee, 1000);
+		})();
+
+	    (function(){
+		    // do some stuff
+		    if (!active)
+		    {
+		    	//alert("active");
+		    	$.ajax({
+				  type: "POST",
+				  url: "{{ url_for('data', experimentID=experiment, action='poll') }}",
+				  //data: data,
+				  success: function(msg){
+				  	data = JSON.parse(msg);
+				  	if (data["status"] == "Running")
+				  		active = true;
+				  }
+				});
+		    	setTimeout(arguments.callee, 1000);
+		    }
+			else
+			{
+				pushData();
+			}
+		})();
+	})
+</script>
 {% endblock %}
 
 {% block body %}
@@ -33,88 +137,98 @@
 	<!-- <p>
 	{{ exp }}
 	</p> -->
-	<div class="row">
-		<div class="col-sm-2 timerAlign">
-			<div class="row timerAlign">
+	<form class="form-horizontal" role="form" id="dataForm" autocomplete="off">
+		<div class="row">
+			<div class="col-sm-2 timerAlign">
+				<div class="row timerAlign">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title timerText">Timer</h3>
+						</div>
+						<div class="panel-body">
+							<div class="timerTime" id="mins" style="display:inline">
+								00
+							</div>
+							<div class="timerTime" style="display:inline">
+								:
+							</div>
+							<div class="timerTime" id="secs" style="display:inline">
+								00
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% for i in range(1,6) %}
+			<div class="col-sm-2">
+				<div class="row personLabel">Person {{ i }}</div>
+				<div class="row rowSpacing"><image class="person centeredBlock" src="/static/images/person.png"></div>
+			</div>
+			{% endfor %}
+		</div>
+		<div class="row">
+			<div class="col-sm-2">
+				<div class="row rowSpacingExtra rightBlock timerAlign">
+					<div class="timerTime">
+						Engaged:
+					</div>
+				</div>
+				<div class="row rowSpacingExtra rightBlock timerAlign">
+					<div class="timerTime">
+						Using Tablet:
+					</div>
+				</div>
+			</div>
+			{% for i in range(1,6) %}
+			<div class="col-sm-2">
+				<div class="row rowSpacing centeredBlock">
+					<input type="checkbox" class="form-control centeredBlock" name="engagement" value="person{{ i }}" checked>
+				</div>
+				<div class="row rowSpacing centeredBlock">
+					<input type="radio" class="form-control centeredBlock" name="tablet" value="person{{ i }}">
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		<div class="row rowSpacing">
+			<div class="col-sm-6">
+				<label class="control-label col-sm-1 leftBlock" for="notes">Notes:</label>
+				<div class="col-sm-11">
+					<textarea class="form-control centeredBlock" rows="5" name="notes" id="notes" autocomplete="off"></textarea>
+				</div>
+			</div>
+			<div class="col-sm-6">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3 class="panel-title timerText">Timer</h3>
+						<h3 class="panel-title timerText">Current Task</h3>
 					</div>
-					<div class="panel-body timerTime">
-						00:00
-					</div>
-				</div>
-			</div>
-		</div>
-		{% for i in range(1,6) %}
-		<div class="col-sm-2">
-			<div class="row personLabel">Person {{ i }}</div>
-			<div class="row rowSpacing"><image class="person centeredBlock" src="/static/images/person.png"></div>
-		</div>
-		{% endfor %}
-	</div>
-	<div class="row">
-		<div class="col-sm-2">
-			<div class="row rowSpacingExtra rightBlock timerAlign">
-				<div class="timerTime">
-					Engaged:
-				</div>
-			</div>
-			<div class="row rowSpacingExtra rightBlock timerAlign">
-				<div class="timerTime">
-					Using Tablet:
-				</div>
-			</div>
-		</div>
-		{% for i in range(1,6) %}
-		<div class="col-sm-2">
-			<div class="row rowSpacing centeredBlock">
-				<input type="checkbox" class="form-control centeredBlock" name="engagement" value="person{{ i }}" checked>
-			</div>
-			<div class="row rowSpacing centeredBlock">
-				<input type="radio" class="form-control centeredBlock" name="tablet" value="person{{ i }}">
-			</div>
-		</div>
-		{% endfor %}
-	</div>
-	<div class="row rowSpacing">
-		<div class="col-sm-6">
-			<label class="control-label col-sm-1 leftBlock" for="notes">Notes:</label>
-			<div class="col-sm-11">
-				<textarea class="form-control centeredBlock" rows="5" id="notes" autocomplete="off"></textarea>
-			</div>
-		</div>
-		<div class="col-sm-6">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h3 class="panel-title timerText">Current Task</h3>
-				</div>
-				<div class="panel-body">
-					<label class="control-label col-sm-6 leftBlock" for="notes">Programming</label>
-					<div class="col-sm-6">
-						<input type="radio" class="form-control centeredBlock" name="task" value="programming">
-					</div>
-					<label class="control-label col-sm-6 leftBlock" for="notes">Strategizing</label>
-					<div class="col-sm-6">
-						<input type="radio" class="form-control centeredBlock" name="task" value="strategizing">
-					</div>
-					<label class="control-label col-sm-6 leftBlock" for="notes">Testing</label>
-					<div class="col-sm-6">
-						<input type="radio" class="form-control centeredBlock" name="task" value="testing">
-					</div>
-					<label class="control-label col-sm-6 leftBlock" for="notes">Disengaged</label>
-					<div class="col-sm-6">
-						<input type="radio" class="form-control centeredBlock" name="task" value="disengaged">
+					<div class="panel-body">
+						<label class="control-label col-sm-6 leftBlock" for="notes">Programming</label>
+						<div class="col-sm-6">
+							<input type="radio" class="form-control centeredBlock" name="task" value="programming">
+						</div>
+						<label class="control-label col-sm-6 leftBlock" for="notes">Strategizing</label>
+						<div class="col-sm-6">
+							<input type="radio" class="form-control centeredBlock" name="task" value="strategizing">
+						</div>
+						<label class="control-label col-sm-6 leftBlock" for="notes">Testing</label>
+						<div class="col-sm-6">
+							<input type="radio" class="form-control centeredBlock" name="task" value="testing">
+						</div>
+						<label class="control-label col-sm-6 leftBlock" for="notes">Disengaged</label>
+						<div class="col-sm-6">
+							<input type="radio" class="form-control centeredBlock" name="task" value="disengaged">
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="row">
-		 <!-- form="dataForm" inside button -->
-		<div class="rowSpacing">
-            <a class="btn btn-block btn-lg btn-primary" href="{{ url_for('done', experimentID=experiment) }}">Done</a>
-        </div>
-	</div>
+		<div class="row">
+			 <!-- form="dataForm" inside button -->
+			<div class="rowSpacing">
+	            <a class="btn btn-block btn-lg btn-primary" href="{{ url_for('done', experimentID=experiment) }}">Done</a>
+	        </div>
+		</div>
+	</form>
 </div>
 {% endblock %}
