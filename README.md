@@ -4,6 +4,7 @@ Study Tracker Website
 Description
 -----------------
 TODO
+Deployed on http://vadweb.us:8005
 
 
 Notes to self
