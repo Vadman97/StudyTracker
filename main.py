@@ -47,21 +47,23 @@ class Person(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	gender = db.Column(db.String(1))
 	age = db.Column(db.Integer)
+	idInExperiment = db.Column(db.Integer)
 
 	experimentID = db.Column(db.Integer, db.ForeignKey('experiment.id'))
 	experiment = db.relationship('Experiment', backref=db.backref('people', lazy='dynamic'))
 
-	def __init__(self, gender, age, experiment):
+	def __init__(self, gender, age, idInExperiment, experiment):
 		self.gender = gender
 		self.age = age
 		self.experiment = experiment
+		self.idInExperiment = idInExperiment
 
 	def __repr__(self):
 		return str(self.id)
 
 class PersonStatus(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
-	timestamp = db.Column(db.DateTime)
+	timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 	engaged = db.Column(db.Boolean)
 	usingTablet = db.Column(db.Boolean)
 	currentTask = db.Column(db.String(20))
@@ -69,12 +71,15 @@ class PersonStatus(db.Model):
 	personID = db.Column(db.Integer, db.ForeignKey('person.id'))
 	person = db.relationship('Person', backref=db.backref('personStatuses', lazy='dynamic'))
 
-	def __init__(self, engaged, usingTablet, currentTask, person):
-		self.timestamp = datetime.datetime()
+	experimentID = db.Column(db.Integer, db.ForeignKey('experiment.id'))
+	experiment = db.relationship('Experiment', backref=db.backref('experimentStatuses', lazy='dynamic'))
+
+	def __init__(self, engaged, usingTablet, currentTask, person, experiment):
 		self.engaged = engaged
-		self.usingTabled = usingTablet
+		self.usingTablet = usingTablet
 		self.currentTask = currentTask
 		self.person = person
+		self.experiment = experiment
 
 	def __repr__(self):
 		return str(self.id)
@@ -154,17 +159,21 @@ def done(experimentID=None):
 		return render_template('postExperiment.html', experiment=experimentID)
 	elif request.method == 'POST':
 		if "notes" not in request.form:
-			request.form["notes"] = ""
+			notes = ""
+		else:
+			notes = request.form["notes"]
 
 		if "howMuchSolved" not in request.form:
-			request.form["howMuchSolved"] = ""
+			howMuchSolved = request.form["howMuchSolved"]
+		else:
+			howMuchSolved = ""
 
 		try:
 			exp = Experiment.query.filter_by(id=experimentID)
 			exp.update({Experiment.status:"Done"})
 			exp = exp.first()
 			data = PostExperimentData(request.form["finalTimeMins"], request.form["finalTimeSecs"], request.form["rankNum"], 
-				request.form["rankDenom"], request.form["solved"], request.form["howMuchSolved"], request.form["notes"], exp)
+				request.form["rankDenom"], request.form["solved"], howMuchSolved, notes, exp)
 			db.session.add(data)
 			db.session.commit()
 		except KeyError, e:
@@ -179,13 +188,13 @@ def data(experimentID=None, action=None):
 	if Experiment.query.filter_by(id=experimentID).count() == 0:
 		return "BAD"
 
+	exp = Experiment.query.filter_by(id=experimentID)
+
 	if action == "start":
-		exp = Experiment.query.filter_by(id=experimentID)
 		exp.update({Experiment.status:"Running"})
 		db.session.commit()
 
 	if action == "poll":
-		exp = Experiment.query.filter_by(id=experimentID)
 		return str({"status": exp.first().__dict__["status"]})
 		person = Person.query.filter_by(experimentID=experimentID).first().__dict__
 		print person
@@ -195,8 +204,52 @@ def data(experimentID=None, action=None):
 			return str({"status": exp.first().__dict__["status"], "ts": oldestPersonStatus.__dict__["timestamp"]})
 
 	if action == "push":
+
 		for item in request.form:
-			print item + " " + str(request.form.getlist(item))
+			print item + ":"
+			name = item.strip("[]")
+			for one in request.form.getlist(item):
+				print str(one)
+		if "notes" not in request.form:
+			notes = ""
+		else:
+			notes = request.form["notes"]
+		if "task" not in request.form:
+			task = ""
+		else:
+			task = request.form["task"]
+
+
+		info = {"notes": notes, "currentTask": task}
+
+		try:
+			for i in range(1, 6):
+				info.update({i: {"engaged": False, "usingTablet": False}})
+
+			for i in range(1, 6):
+				if (str("person") + str(i)) in request.form.getlist("engagement[]"):
+					info[i]["engaged"] = True
+				else:
+					info[i]["engaged"] = False
+
+				if (str("person") + str(i)) in request.form.getlist("tablet"):
+					info[i]["usingTablet"] = True 
+				else:
+					info[i]["usingTablet"] = False
+					
+		except KeyError, e:
+			print "ERROR pushData form missing keys: %s" % e
+			return "BAD"
+
+		print str(info)
+
+		for i in range(1, 6):
+			person = exp.first().people.filter_by(idInExperiment=i).first()
+			# print person.__dict__
+
+			personStatus = PersonStatus(info[i]["engaged"], info[i]["usingTablet"], info["currentTask"], person, exp.first())
+			db.session.add(personStatus)
+		db.session.commit()
 
 	return "OK"
 
@@ -206,11 +259,13 @@ def setupExperiment():
 		#for item in request.form:
 		#	print item + " " + request.form[item]
 		if "notes" not in request.form:
-			request.form["notes"] = ""
+			notes = ""
+		else:
+			notes = request.form["notes"]
 
 		try:
 			exp = Experiment(request.form["experimentName"], request.form["timeGroup"], request.form["annotatorName"], request.form["group"], 
-			request.form["outlier"], request.form["friendship"], request.form["notes"])
+			request.form["outlier"], request.form["friendship"], notes)
 		except KeyError, e:
 			print "ERROR setupExperiment form missing keys: %s" % e
 			return redirect(url_for('index'), code=302)
@@ -218,7 +273,7 @@ def setupExperiment():
 		db.session.add(exp)
 
 		for i in range(1, 6):
-			p = Person(request.form["person" + str(i) + "Gender"], request.form["person" + str(i) + "Age"], exp)
+			p = Person(request.form["person" + str(i) + "Gender"], request.form["person" + str(i) + "Age"], i, exp)
 			db.session.add(p)
 
 		db.session.commit()

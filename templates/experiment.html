@@ -59,27 +59,34 @@
 			pushData();
 	    });
 
+	    $('#notes').bind('input propertychange', function() {
+			pushData();
+		});
+
 	    (function(){
 		    //timer update
-		    var mins = parseInt($('#mins').html());
-		    var secs = parseInt($('#secs').html());
-
-		    secs++;
-		    if (secs >= 60)
+		    if (active)
 		    {
-		    	secs = 0;
-		    	mins++;
-		    }
-		    var minsText = mins.toString();
-		    var secsText = secs.toString();
-		    if (mins < 10)
-		    	minsText = "0" + minsText;
-		    if (secsText < 10)
-		    	secsText = "0" + secsText;
+			    var mins = parseInt($('#mins').html());
+			    var secs = parseInt($('#secs').html());
 
-		    $('#mins').html(minsText);
-		    $('#secs').html(secsText);
+			    secs++;
+			    if (secs >= 60)
+			    {
+			    	secs = 0;
+			    	mins++;
+			    }
+			    var minsText = mins.toString();
+			    var secsText = secs.toString();
+			    if (mins < 10)
+			    	minsText = "0" + minsText;
+			    if (secsText < 10)
+			    	secsText = "0" + secsText;
 
+			    $('#mins').html(minsText);
+			    $('#secs').html(secsText);
+			}
+			
 		    setTimeout(arguments.callee, 1000);
 		})();
 
