@@ -86,7 +86,7 @@
 			    $('#mins').html(minsText);
 			    $('#secs').html(secsText);
 			}
-			
+
 		    setTimeout(arguments.callee, 1000);
 		})();
 
@@ -100,9 +100,14 @@
 				  url: "{{ url_for('data', experimentID=experiment, action='poll') }}",
 				  //data: data,
 				  success: function(msg){
+				  	//msg = msg.replace("u'", "'")
+				  	//msg = msg.replace("'", '"')
 				  	data = JSON.parse(msg);
 				  	if (data["status"] == "Running")
+				  	{
 				  		active = true;
+				  		$('#startModal').modal('hide');
+				  	}
 				  }
 				});
 		    	setTimeout(arguments.callee, 1000);

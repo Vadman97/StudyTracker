@@ -86,6 +86,7 @@ class PersonStatus(db.Model):
 
 class PostExperimentData(db.Model):
 	id = db.Column(db.Integer, primary_key=True)	
+	timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 	experimentID = db.Column(db.Integer, db.ForeignKey('experiment.id'))
 	experiment = db.relationship('Experiment', backref=db.backref('postResponses', lazy='dynamic'))
 
@@ -195,7 +196,7 @@ def data(experimentID=None, action=None):
 		db.session.commit()
 
 	if action == "poll":
-		return str({"status": exp.first().__dict__["status"]})
+		return str('{"status": "'+ str(exp.first().__dict__["status"]) +'"}')
 		person = Person.query.filter_by(experimentID=experimentID).first().__dict__
 		print person
 		oldestPersonStatus = PersonStatus.query.filter_by(personID=person["id"]).order_by(PersonStatus.timestamp.asc()).first()
@@ -236,7 +237,7 @@ def data(experimentID=None, action=None):
 					info[i]["usingTablet"] = True 
 				else:
 					info[i]["usingTablet"] = False
-					
+
 		except KeyError, e:
 			print "ERROR pushData form missing keys: %s" % e
 			return "BAD"
