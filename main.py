@@ -105,7 +105,7 @@ db.create_all()
 #def send_js(path):
 #	return send_from_directory('static', path)
 
-@app.route('/gitupdate/')
+@app.route('/gitupdate/', methods=['GET', 'POST'])
 def git():
 	subprocess.Popen(["git", "pull"], cwd='/var/interactionlab')
 	# return str(subprocess.check_output(["ls", "-lsah"]))
@@ -139,7 +139,7 @@ def experiment(experimentID=None):
 
 	return render_template('experiment.html', experiment=experimentID)
 
-@app.route('/done/<int:experimentID>', methods=['GET', 'POST"'])
+@app.route('/done/<int:experimentID>', methods=['GET', 'POST'])
 def done(experimentID=None):
 	if (request.method == 'GET'):
 		return render_template('postExperiment.html', experiment=experimentID)
