@@ -108,6 +108,7 @@ db.create_all()
 @app.route('/gitupdate/')
 def git():
 	subprocess.call(["git", "pull"])
+	return "OK!"
 
 @app.route('/')
 def index():
