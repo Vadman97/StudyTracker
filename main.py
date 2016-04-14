@@ -165,9 +165,9 @@ def done(experimentID=None):
 			notes = request.form["notes"]
 
 		if "howMuchSolved" not in request.form:
-			howMuchSolved = request.form["howMuchSolved"]
-		else:
 			howMuchSolved = ""
+		else:
+			howMuchSolved = request.form["howMuchSolved"]
 
 		try:
 			exp = Experiment.query.filter_by(id=experimentID)
