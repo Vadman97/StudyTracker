@@ -69,11 +69,12 @@ class PersonStatus(db.Model):
 	personID = db.Column(db.Integer, db.ForeignKey('person.id'))
 	person = db.relationship('Person', backref=db.backref('personStatuses', lazy='dynamic'))
 
-	def __init__(self, engaged, usingTablet, currentTask):
+	def __init__(self, engaged, usingTablet, currentTask, person):
 		self.timestamp = datetime.datetime()
 		self.engaged = engaged
 		self.usingTabled = usingTablet
 		self.currentTask = currentTask
+		self.person = person
 
 	def __repr__(self):
 		return str(self.id)
@@ -84,26 +85,29 @@ class PostExperimentData(db.Model):
 	experiment = db.relationship('Experiment', backref=db.backref('postResponses', lazy='dynamic'))
 
 	finalTime = db.Column(db.Time)
-	rank = db.Column(db.String(32))
-	solvedMaze = db.Column(db.String(3))
+	rankNum = db.Column(db.Integer)
+	rankDenom = db.Column(db.Integer)
+	solved = db.Column(db.Boolean)
 	howMuchSolved = db.Column(db.String(100))
 	notes = db.Column(db.String(2048))
 
-	def __init__(self, finalTime, rank, solvedMaze, howMuchSolved, notes):
-		self.finalTime = finalTime
-		self.rank = rank
-		self.solvedMaze = solvedMaze
+	def __init__(self, finalTimeMins, finalTimeSecs, rankNum, rankDenom, solved, howMuchSolved, notes, experiment):
+		self.finalTime = datetime.datetime.strptime(str(int(finalTimeMins) * 60 + int(finalTimeSecs)) , "%M").time()
+		self.rankNum = rankNum
+		self.rankDenom = rankDenom
+		self.solved = True if (solved == "Yes") else False
 		self.howMuchSolved = howMuchSolved
 		self.notes = notes
+		self.experiment = experiment
 
 	def __repr__(self):
 		return str(self.id)
 
 db.create_all()
 
-#@app.route('/static/<path:path>')
-#def send_js(path):
-#	return send_from_directory('static', path)
+@app.route('/static/<path:path>')
+def send_js(path):
+	return send_from_directory('static', path)
 
 @app.route('/gitupdate/', methods=['GET', 'POST'])
 def git():
@@ -127,36 +131,49 @@ def init():
 
 @app.route('/experiment/<int:experimentID>')
 def experiment(experimentID=None):
-	found = False
-	#TODO REWRITE AS NOT IN QUERY 
-	# as in if experimentID not in Experiment table
-	for exp in Experiment.query.all(): 
-		if str(experimentID) is str(exp):
-			found = True
-			break;
-	if not found:
+	# found = False
+	# REWRITE AS NOT IN QUERY as in if experimentID not in Experiment table
+	# for exp in Experiment.query.all(): 
+	# 	if str(experimentID) is str(exp):
+	# 		found = True
+	# 		break;
+	# if not found:
+	# 	return redirect(url_for('index'), code=302)
+
+	if Experiment.query.filter_by(id=experimentID).count() == 0:
 		return redirect(url_for('index'), code=302)
 
-	return render_template('experiment.html', experiment=experimentID)
+	return render_template('experiment.html', experiment=experimentID, exp=Experiment.query.filter_by(id=experimentID).first().__dict__)
 
 @app.route('/done/<int:experimentID>', methods=['GET', 'POST'])
 def done(experimentID=None):
 	if (request.method == 'GET'):
 		return render_template('postExperiment.html', experiment=experimentID)
 	else:
+		try:
+			exp = Experiment.query.filter_by(id=experimentID).first()
+			data = Experiment(request.form["finalTimeMins"], request.form["finalTimeSecs"], request.form["rankNum"], request.form["group"], 
+			request.form["rankDenom"], request.form["solved"], request.form["howMuchSolved"], request.form["notes"], exp)
+		except KeyError, e:
+			print "ERROR done form missing keys: %s" % e
+			return redirect(url_for('index'), code=302)
+
+		db.session.add(data)
+		db.session.commit()
 
 		return redirect(url_for('index'), code=302)
 
 @app.route('/setupExperiment/', methods=['POST'])
 def setupExperiment():
 	if request.method == 'POST':
-		for item in request.form:
-			print item + " " + request.form[item]
+		#for item in request.form:
+		#	print item + " " + request.form[item]
 
 		try:
-			exp = Experiment(request.form["experimentName"], request.form["timeGroup"], request.form["annotatorName"], request.form["group"], 
+			exp = PostExperimentData(request.form["experimentName"], request.form["timeGroup"], request.form["annotatorName"], request.form["group"], 
 			request.form["outlier"], request.form["friendship"], request.form["notes"])
 		except KeyError, e:
+			print "ERROR setupExperiment form missing keys: %s" % e
 			return redirect(url_for('index'), code=302)
 
 		db.session.add(exp)
