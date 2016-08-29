@@ -1,0 +1,9 @@
+keyboard shortcuts
+frontend time sync (on page load get system time)
+automate experiment setup page (create multiple time slots from the same place)
+n number of people
+type in time for timeslots
+additional (Customizeable) fields
+exeriment name (display timeslot or some unique name at the top)
+fix per annotator (name when you connect to experiment)
+    labeling data should be per annotator
