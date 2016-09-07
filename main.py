@@ -51,10 +51,10 @@ class Experiment(Base):
 class Annotation(Base):
     id = db.Column(db.Integer, primary_key=True)
     annotatorName = db.Column(db.String(64))
-    experimentID = db.Column(db.Integer, db.ForeignKey('experiment.id'))
+    personID = db.Column(db.Integer, db.ForeignKey('person.id'))
+    person = db.relationship('Person', backref='annotations', uselist=False)
 
-    experiment = db.relationship('Experiment', backref='annotations', uselist=False)
-    __table_args__ = (UniqueConstraint('annotatorName', 'experimentID'),)
+    __table_args__ = (UniqueConstraint('annotatorName', 'personID'),)
 
     def __init__(self, annotatorName, experiment):
         self.annotatorName = annotatorName
@@ -70,14 +70,10 @@ class Person(Base):
     experimentID = db.Column(db.Integer, db.ForeignKey('experiment.id'))
     experiment = db.relationship('Experiment', backref=db.backref('people', lazy='dynamic'))
 
-    annotationID = db.Column(db.Integer, db.ForeignKey('annotation.id'))
-    annotation = db.relationship('Annotation', backref='people')
-
-    def __init__(self, gender, age, idInExperiment, experiment, annotation):
+    def __init__(self, gender, age, idInExperiment, experiment):
         self.gender = gender
         self.age = age
         self.experiment = experiment
-        self.annotation = annotation
         self.idInExperiment = idInExperiment
 
     def __repr__(self):
@@ -169,7 +165,7 @@ def join_experiment(experimentID=None):
     exp = Experiment.query.filter(Experiment.id == experimentID).first()
     if exp is None:
         return redirect(url_for('index'), code=302)
-    annotations = exp.annotations
+    annotations = exp.people.first().annotations
     return render_template('joinExperiment.html', anno=annotations, exp=exp)
 
 
@@ -179,16 +175,13 @@ def create_annotation(experimentID=None):
     if exp is None:
         return redirect(url_for('index'), code=302)
 
-    annotation = Annotation(request.form.get("annotatorName"), exp)
-    db.session.add(annotation)
-
-    for i in range(MIN_PERSON, MAX_PERSON):
-        p = Person(request.form["person" + str(i) + "Gender"], request.form["person" + str(i) + "Age"], i, exp,
-                   annotation)
-        db.session.add(p)
+    for person in exp.people.all():
+        annotation = Annotation(request.form.get("annotatorName"), person.experiment)
+        annotation.person = person
+        db.session.add(annotation)
 
     db.session.commit()
-    return redirect(url_for('/experiment/' + annotation.id))
+    return redirect(url_for('experiment', annotationID=annotation.id))
 
 @app.route('/experiment/<int:annotationID>')
 def experiment(annotationID=None):
@@ -201,10 +194,11 @@ def experiment(annotationID=None):
     # if not found:
     # 	return redirect(url_for('index'), code=302)
 
-    experiment = Experiment.query.filter_by(id=experimentID).first()
-    annotation = Annotation.query.join(Experiment)\
-                           .filter(Experiment.id == experimentID)\
-                           .filter(Annotation.annotatorName == annotatorName).first()
+    annotation = Annotation.query.filter(Annotation.id == annotationID).first()
+    if annotation.person is None:
+        return "Server Error!"
+
+    experiment = annotation.person.experiment.first()
 
     if experiment is None or annotation is None:
         return redirect(url_for('index'), code=302)
@@ -329,6 +323,11 @@ def setupExperiment():
             return redirect(url_for('index'), code=302)
 
         db.session.add(exp)
+
+        for i in range(MIN_PERSON, MAX_PERSON):
+            p = Person(request.form["person" + str(i) + "Gender"], request.form["person" + str(i) + "Age"], i, exp)
+            db.session.add(p)
+
         db.session.commit()
 
     # return redirect(url_for('experiment'), code=302) #TODO should forward to specific experiment with id
