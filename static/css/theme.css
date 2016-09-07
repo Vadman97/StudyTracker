@@ -28,7 +28,7 @@ body {
 	width: 20%;
 }
 
-.personLabel {
+.personLabel .centerLabel {
 	text-align: center;
 	vertical-align: middle;
 	font-weight: bold;
@@ -86,7 +86,7 @@ body {
 	font-size: 200%;
 }
 
-.timerTime {
+.timerTime{
 	font-weight: bold;
 	font-size: 150%;
 }

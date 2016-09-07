@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<title>Join an Experiment: {{ exp.name }}</title>
+{% endblock %}
+
+{% block body %}
+<div class="jumbotron jumbotronPadding">
+	<h1 class="theme-heading">Join an Experiment: {{ exp.name }}</h1>
+
+	<form class="form-horizontal" role="form" id="dataForm" method="post" action="{{ url_for('create_annotation', experimentID=exp.id|string) }}" autocomplete="off">
+		<div class="row">
+            <div class="col-sm-6">
+                <div class="row">
+                    <h3>Existing annotators</h3>
+                </div>
+                <div class="row">
+                    {% if not anno|length %}
+                        <h3>None configured!</h3>
+                    {% else %}
+                        {% for annotation in anno %}
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <a class="biggerText" href="/experiment/{{annotation.id}}">{{annotation.annotatorName}}</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="col-sm-12">
+                    <div class="form-group has-feedback">
+                        <label class="control-label col-sm-4" for="annotatorName">Annotator Name:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="annotatorName" name="annotatorName" required autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" form="dataForm" class="btn btn-block btn-lg btn-primary rowSpacing">Join as new annotator</button>
+            </div>
+        </div>
+	</form>
+
+</div>
+{% endblock %}

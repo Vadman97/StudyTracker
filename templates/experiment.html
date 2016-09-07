@@ -24,7 +24,7 @@
 	{
 		$.ajax({
 			type: "POST",
-			url: "{{ url_for('data', experimentID=experiment, action='push') }}",
+			url: "{{ url_for('data', experimentID=exp.id, action='push') }}",
 			data: $('#dataForm').serializeObject()
 		});
 	}
@@ -32,7 +32,7 @@
 	var active = false;
 	var timeSet = false;
 
-	{% if exp["status"] == "Running" %}
+	{% if exp.status == "Running" %}
 		active = true;
 	{% endif %}
 
@@ -42,7 +42,7 @@
 	    $('#startExpButton').click(function() {
 	        $.ajax({
 			    type: 'POST',
-			    url: "{{ url_for('data', experimentID=experiment, action='start') }}",
+			    url: "{{ url_for('data', experimentID=exp.id, action='start') }}",
 			    data: { 
 			        'start': true, 
 			    },
@@ -97,7 +97,7 @@
 		    	//alert("active");
 		    	$.ajax({
 				  type: "POST",
-				  url: "{{ url_for('data', experimentID=experiment, action='poll') }}",
+				  url: "{{ url_for('data', experimentID=exp.id, action='poll') }}",
 				  //data: data,
 				  success: function(msg){
 				  	//msg = msg.replace("u'", "'")
@@ -123,7 +123,7 @@
 
 {% block body %}
 
-{% if exp["status"] == "Created" %}
+{% if exp.status == "Created" %}
 <div class="modal fade" id="startModal" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -238,7 +238,7 @@
 		<div class="row">
 			 <!-- form="dataForm" inside button -->
 			<div class="rowSpacing">
-	            <a class="btn btn-block btn-lg btn-primary" href="{{ url_for('done', experimentID=experiment) }}">Done</a>
+	            <a class="btn btn-block btn-lg btn-primary" href="{{ url_for('done', experimentID=exp.id) }}">Done</a>
 	        </div>
 		</div>
 	</form>
