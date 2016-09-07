@@ -24,7 +24,7 @@
 	{
 		$.ajax({
 			type: "POST",
-			url: "{{ url_for('data', experimentID=exp.id, action='push') }}",
+			url: "{{ url_for('data', annotationID=anno.id, action='push') }}",
 			data: $('#dataForm').serializeObject()
 		});
 	}
@@ -42,7 +42,7 @@
 	    $('#startExpButton').click(function() {
 	        $.ajax({
 			    type: 'POST',
-			    url: "{{ url_for('data', experimentID=exp.id, action='start') }}",
+			    url: "{{ url_for('data', annotationID=anno.id, action='start') }}",
 			    data: { 
 			        'start': true, 
 			    },
@@ -97,7 +97,7 @@
 		    	//alert("active");
 		    	$.ajax({
 				  type: "POST",
-				  url: "{{ url_for('data', experimentID=exp.id, action='poll') }}",
+				  url: "{{ url_for('data', annotationID=anno.id, action='poll') }}",
 				  //data: data,
 				  success: function(msg){
 				  	//msg = msg.replace("u'", "'")
@@ -110,7 +110,7 @@
 				  	}
 				  }
 				});
-		    	setTimeout(arguments.callee, 1000);
+		    	setTimeout(arguments.callee, 250);
 		    }
 			else
 			{
@@ -238,7 +238,7 @@
 		<div class="row">
 			 <!-- form="dataForm" inside button -->
 			<div class="rowSpacing">
-	            <a class="btn btn-block btn-lg btn-primary" href="{{ url_for('done', experimentID=exp.id) }}">Done</a>
+	            <a class="btn btn-block btn-lg btn-primary" href="{{ url_for('done', annotationID=anno.id) }}">Done</a>
 	        </div>
 		</div>
 	</form>

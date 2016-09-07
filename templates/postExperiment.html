@@ -8,7 +8,7 @@
 <div class="jumbotron jumbotronPadding">
 	<h1 class="theme-heading">Team Results</h1>
 
-	<form class="form-horizontal" role="form" id="postExpForm" method="post" action="{{ url_for('done', experimentID=experiment) }}" autocomplete="off">
+	<form class="form-horizontal" role="form" id="postExpForm" method="post" action="{{ url_for('done', annotationID=annotation.id) }}" autocomplete="off">
 		<div class="row">
 			<div class="col-sm-6">
 				<label class="control-label col-sm-2 leftBlock timerTime" style="padding-left: 0">Time:</label>
