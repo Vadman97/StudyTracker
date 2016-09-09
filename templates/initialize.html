@@ -41,10 +41,22 @@
 									{% endif %}
 								{% endfor %}
 							{% endfor %}
-							<!-- NOTE THIS SHOULD BE POPULATED FROM THE BACKEND -->
+							<!-- NOTE THIS SHOULD BE POPULATED FROM A LIST FROM THE BACKEND -->
 						</select>
 					</div>
 			    </div>
+				<div class="form-group has-feedback">
+					<div class="col-sm-6">
+						<label class="control-label col-sm-2 timerTime" style="padding-left: 0">
+							Time Group (Manual):
+						</label>
+						<div class="form-group col-sm-10">
+							<input type="number" class="form-control personEntry centerBlock finalTime" name="timeGroupMins" id="timeGroupMins" required autocomplete="off" min="0" max="23">
+							<span class="colon"> : </span>
+							<input type="number" class="form-control personEntry centerBlock finalTime" name="timeGroupSecs" id="timeGroupSecs" required autocomplete="off" min="0" max="59">
+						</div>
+					</div>	
+				</div>
 			</div>
 		</div>
 
