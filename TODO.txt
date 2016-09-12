@@ -1,9 +1,10 @@
 keyboard shortcuts
-frontend time sync (on page load get system time)
+
 automate experiment setup page (create multiple time slots from the same place)
 n number of people
-type in time for timeslots
 additional (Customizeable) fields
+
+frontend time sync (on page load get system time)
 
 ===========================DONE==================================
 
@@ -11,3 +12,5 @@ fix per annotator (name when you connect to experiment)
     labeling data should be per annotator
 
 experiment name (display timeslot or some unique name at the top)
+
+type in time for timeslots

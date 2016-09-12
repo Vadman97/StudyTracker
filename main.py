@@ -132,6 +132,7 @@ class PostExperimentData(Base):
 
 db.create_all()
 
+
 @app.route('/static/<path:path>')
 def send_js(path):
     return send_from_directory('static', path)
@@ -183,6 +184,7 @@ def create_annotation(experimentID=None):
     db.session.commit()
     return redirect(url_for('experiment', annotationID=annotation.id))
 
+
 @app.route('/experiment/<int:annotationID>')
 def experiment(annotationID=None):
     # found = False
@@ -232,7 +234,8 @@ def done(annotationID=None):
             exp.status = "Done"
             data = PostExperimentData(request.form["finalTimeMins"], request.form["finalTimeSecs"],
                                       request.form["rankNum"],
-                                      request.form["rankDenom"], request.form["solved"], howMuchSolved, notes, annotation)
+                                      request.form["rankDenom"], request.form["solved"], howMuchSolved, notes,
+                                      annotation)
             db.session.add(data)
             db.session.commit()
         except KeyError, e:
@@ -298,7 +301,8 @@ def data(annotationID=None, action=None):
             person = exp.people.filter_by(idInExperiment=i).first()
             # print person.__dict__
 
-            personStatus = PersonStatus(info[i]["engaged"], info[i]["usingTablet"], info[i]["currentTask"], person, annotation)
+            personStatus = PersonStatus(info[i]["engaged"], info[i]["usingTablet"], info[i]["currentTask"], person,
+                                        annotation)
             db.session.add(personStatus)
         db.session.commit()
 
@@ -314,9 +318,16 @@ def setupExperiment():
             notes = ""
         else:
             notes = request.form["notes"]
+        if "timeGroupMins" in request.form and "timeGroupSecs" in request.form:
+            time_group = request.form["timeGroupMins"] + ":" + request.form["timeGroupSecs"]
+            time_group = datetime.datetime.strptime(time_group, "%H:%M").strftime("%I:%M %p")
+        elif "timeGroup" in request.form:
+            time_group = request.form["timeGroup"]
+        else:
+            return redirect(url_for('index'), code=302)
 
         try:
-            exp = Experiment(request.form["experimentName"], request.form["timeGroup"], request.form["group"],
+            exp = Experiment(request.form["experimentName"], time_group, request.form["group"],
                              request.form["outlier"], request.form["friendship"], notes)
         except KeyError, e:
             print "ERROR setupExperiment form missing keys: %s" % e
