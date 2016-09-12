@@ -5,6 +5,25 @@
 {% endblock %}
 
 {% block body %}
+<div hidden="hidden" id="personCollectionTemplate">
+  <div class="row personLabel" style="text-align: center;">Person $$ i $$</div>
+  <div class="row rowSpacing"><image class="person centeredBlock" src="/static/images/person.png"></image></div>
+  <div class="row rowSpacing centeredBlock">
+    <label class="control-label col-sm-2 centeredBlock" for="person$$ i $$Age">Age:</label>
+    <div class="col-sm-10">
+      <input type="number" class="form-control personEntry centeredBlock" id="person$$ i $$Age" name="person$$ i $$Age" required autocomplete="off" min="1" max="100">
+    </div>
+  </div>
+  <div class="row centeredBlock inputRowSpace">
+    <label class="control-label col-sm-2 centeredBlock" for="person$$ i $$Gender">Gender:</label>
+    <div class="col-sm-10">
+      <select class="form-control personEntry centeredBlock" id="person$$ i $$Gender" name="person$$ i $$Gender" required>
+        <option>M</option><option>F</option><option>N</option>
+      </select>
+    </div>
+  </div>
+</div>
+
 <div class="jumbotron jumbotronPadding">
 	<h1 class="theme-heading">Experiment Initialization</h1>
 
@@ -44,44 +63,33 @@
 							<!-- NOTE THIS SHOULD BE POPULATED FROM A LIST FROM THE BACKEND -->
 						</select>
 					</div>
-			    </div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-6">
+				<label class="control-label col-sm-4" style="padding-left: 0">
+						Number of participants:
+				</label>
+				<div class="form-group col-sm-8">
+					<input type="number" class="form-control rightBlock finalTime" name="numPeople" id="numPeople" autocomplete="off" value="5" min="1" max="12">
+				</div>
+			</div>
+			<div class="col-sm-6">
 				<div class="form-group has-feedback">
 					<label class="control-label col-sm-offset-1 col-sm-4 rightBlock" style="padding-left: 0">
 						Manual Time:
 					</label>
-					<div class="form-group col-sm-6">
+					<div class="form-group col-sm-8">
 						<input type="number" class="form-control rightBlock finalTime" name="timeGroupMins" id="timeGroupMins" autocomplete="off" min="0" max="23">
 						<span class="colon"> : </span>
 						<input type="number" class="form-control rightBlock finalTime" name="timeGroupSecs" id="timeGroupSecs" autocomplete="off" min="0" max="59">
 					</div>
-
 				</div>
 			</div>
 		</div>
 
-		<div class="row rowSpacing">
-			<div class="col-sm-1"></div>
-			{% for i in range(1,6) %}
-			<div class="col-sm-2">
-				<div class="row personLabel">Person {{ i }}</div>
-				<div class="row rowSpacing"><image class="person centeredBlock" src="/static/images/person.png"></image></div>
-				<div class="row rowSpacing centeredBlock">
-					<label class="control-label col-sm-3 leftBlock" for="person{{ i }}Age">Age:</label>
-					<div class="col-sm-9">
-						<input type="number" class="form-control personEntry rightBlock" id="person{{ i }}Age" name="person{{ i }}Age" required autocomplete="off" min="1" max="100">
-					</div>
-				</div>
-				<div class="row centeredBlock inputRowSpace">
-					<label class="control-label col-sm-3" for="person{{ i }}Gender">Gender:</label>
-					<div class="col-sm-9">
-						<select class="form-control personEntry rightBlock" id="person{{ i }}Gender" name="person{{ i }}Gender" required>
-							<option>M</option><option>F</option><option>N</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			{% endfor %}
-			<div class="col-sm-1"></div> <!-- todo more elegant solution !-->
+    <div class="row rowSpacing" id="personCollectionRow">
 		</div>
 
 		<div class="row centeredBlock rowSpacing">
@@ -124,4 +132,7 @@
 	</form>
 
 </div>
+{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename='js/initialize.js') }}"></script>
 {% endblock %}

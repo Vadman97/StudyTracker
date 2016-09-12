@@ -1,12 +1,13 @@
-keyboard shortcuts
+export to csv
 
-automate experiment setup page (create multiple time slots from the same place)
-n number of people
+automate experiment setup page (create multiple time slots from the same place) (script)
+keyboard shortcuts
 additional (Customizeable) fields
 
 frontend time sync (on page load get system time)
-
+===========================BUGS==================================
 ===========================DONE==================================
+n number of people
 
 fix per annotator (name when you connect to experiment)
     labeling data should be per annotator

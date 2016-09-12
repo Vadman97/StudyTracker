@@ -5,7 +5,7 @@ import subprocess
 
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import UniqueConstraint
+from tables import *
 
 MIN_PERSON = 1
 MAX_PERSON = 6
@@ -18,120 +18,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_ECHO'] = False
 
 db = SQLAlchemy(app)
-Base = db.Model
-
-
-class Experiment(Base):
-    id = db.Column(db.Integer, primary_key=True)
-    # hash = db.Column(db.String(64))
-    name = db.Column(db.String(64))
-    timeGroup = db.Column(db.Time())
-    group = db.Column(db.String(10))
-    outlier = db.Column(db.String(1))
-    friendship = db.Column(db.Integer)
-    notes = db.Column(db.String(2048))
-    status = db.Column(db.String(20))
-
-    def __init__(self, name, timeGroup, group, outlier, friendship, notes):
-        # m = hashlib.sha512()
-        # m.update(str(id))
-        # self.hash = m.hexdigest()
-        self.name = name
-        self.timeGroup = datetime.datetime.strptime(timeGroup, "%I:%M %p").time()
-        self.group = group
-        self.outlier = outlier
-        self.friendship = friendship
-        self.notes = notes
-        self.status = "Created"  # or Running or Done
-
-    def __repr__(self):
-        return str(self.id)
-
-
-class Annotation(Base):
-    id = db.Column(db.Integer, primary_key=True)
-    annotatorName = db.Column(db.String(64))
-    personID = db.Column(db.Integer, db.ForeignKey('person.id'))
-    person = db.relationship('Person', backref='annotations', uselist=False)
-
-    __table_args__ = (UniqueConstraint('annotatorName', 'personID'),)
-
-    def __init__(self, annotatorName, experiment):
-        self.annotatorName = annotatorName
-        self.experiment = experiment
-
-
-class Person(Base):
-    id = db.Column(db.Integer, primary_key=True)
-    gender = db.Column(db.String(1))
-    age = db.Column(db.Integer)
-    idInExperiment = db.Column(db.Integer)
-
-    experimentID = db.Column(db.Integer, db.ForeignKey('experiment.id'))
-    experiment = db.relationship('Experiment', backref=db.backref('people', lazy='dynamic'))
-
-    def __init__(self, gender, age, idInExperiment, experiment):
-        self.gender = gender
-        self.age = age
-        self.experiment = experiment
-        self.idInExperiment = idInExperiment
-
-    def __repr__(self):
-        return str(self.id)
-
-
-class PersonStatus(Base):
-    id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    engaged = db.Column(db.Boolean)
-    usingTablet = db.Column(db.Boolean)
-    currentTask = db.Column(db.String(20))
-
-    personID = db.Column(db.Integer, db.ForeignKey('person.id'))
-    person = db.relationship('Person', backref=db.backref('personStatuses', lazy='dynamic'))
-
-    annotationID = db.Column(db.Integer, db.ForeignKey('annotation.id'))
-    annotation = db.relationship('Annotation', backref=db.backref('experimentStatuses', lazy='dynamic'))
-
-    def __init__(self, engaged, usingTablet, currentTask, person, annotation):
-        self.engaged = engaged
-        self.usingTablet = usingTablet
-        self.currentTask = currentTask
-        self.person = person
-        self.annotation = annotation
-
-    def __repr__(self):
-        return str(self.id)
-
-
-class PostExperimentData(Base):
-    id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    annotationID = db.Column(db.Integer, db.ForeignKey('annotation.id'))
-    annotation = db.relationship('Annotation', backref=db.backref('postResponses', lazy='dynamic'))
-
-    finalTime = db.Column(db.Time)
-    rankNum = db.Column(db.Integer)
-    rankDenom = db.Column(db.Integer)
-    solved = db.Column(db.Boolean)
-    howMuchSolved = db.Column(db.String(100))
-    notes = db.Column(db.String(2048))
-
-    def __init__(self, finalTimeMins, finalTimeSecs, rankNum, rankDenom, solved, howMuchSolved, notes, annotation):
-        self.finalTime = datetime.datetime.strptime(str(finalTimeMins) + " " + str(finalTimeSecs), "%M %S").time()
-        self.rankNum = rankNum
-        self.rankDenom = rankDenom
-        self.solved = True if (solved == "Yes") else False
-        self.howMuchSolved = howMuchSolved
-        self.notes = notes
-        self.annotation = annotation
-
-    def __repr__(self):
-        return str(self.id)
-
-
-db.create_all()
-
+Base.metadata.create_all(db.engine)
 
 @app.route('/static/<path:path>')
 def send_js(path):
@@ -150,7 +37,7 @@ def git():
 def index():
     # return 'Index Page'
     users = collections.OrderedDict()
-    exps = Experiment.query.filter(Experiment.status != "Done").all()
+    exps = db.session.query(Experiment).filter(Experiment.status != "Done").all()
     for u in exps:
         users.update({u: u.__dict__})
     return render_template('index.html', exps=users)
@@ -163,7 +50,7 @@ def init():
 
 @app.route('/joinExperiment/<int:experimentID>')
 def join_experiment(experimentID=None):
-    exp = Experiment.query.filter(Experiment.id == experimentID).first()
+    exp = db.session.query(Experiment).filter(Experiment.id == experimentID).first()
     if exp is None:
         return redirect(url_for('index'), code=302)
     annotations = exp.people.first().annotations
@@ -172,7 +59,7 @@ def join_experiment(experimentID=None):
 
 @app.route('/createAnnotation/<int:experimentID>', methods=['POST'])
 def create_annotation(experimentID=None):
-    exp = Experiment.query.filter(Experiment.id == experimentID).first()
+    exp = db.session.query(Experiment).filter(Experiment.id == experimentID).first()
     if exp is None:
         return redirect(url_for('index'), code=302)
 
@@ -189,14 +76,14 @@ def create_annotation(experimentID=None):
 def experiment(annotationID=None):
     # found = False
     # REWRITE AS NOT IN QUERY as in if experimentID not in Experiment table
-    # for exp in Experiment.query.all():
+    # for exp in db.session.query(Experiment).all():
     #     if str(experimentID) is str(exp):
     #         found = True
     #         break;
     # if not found:
     #     return redirect(url_for('index'), code=302)
 
-    annotation = Annotation.query.filter(Annotation.id == annotationID).first()
+    annotation = db.session.query(Annotation).filter(Annotation.id == annotationID).first()
     if annotation is None:
         return redirect(url_for('index'), code=302)
     if annotation.person is None:
@@ -207,12 +94,12 @@ def experiment(annotationID=None):
     if experiment is None or annotation is None:
         return redirect(url_for('index'), code=302)
 
-    return render_template('experiment.html', exp=experiment, anno=annotation)
+    return render_template('experiment.html', exp=experiment, anno=annotation, numPeople=experiment.numPeople)
 
 
 @app.route('/done/<int:annotationID>', methods=['GET', 'POST'])
 def done(annotationID=None):
-    annotation = Annotation.query.filter_by(id=annotationID).first()
+    annotation = db.session.query(Annotation).filter_by(id=annotationID).first()
     if annotation is None or annotation.person is None or annotation.person.experiment is None:
         return redirect(url_for('index'), code=302)
 
@@ -247,10 +134,10 @@ def done(annotationID=None):
 
 @app.route('/data/<int:annotationID>/<string:action>', methods=['GET', 'POST'])
 def data(annotationID=None, action=None):
-    if Annotation.query.filter_by(id=annotationID).count() == 0:
+    if db.session.query(Annotation).filter_by(id=annotationID).count() == 0:
         return "BAD"
 
-    annotation = Annotation.query.filter_by(id=annotationID).first()
+    annotation = db.session.query(Annotation).filter_by(id=annotationID).first()
     if annotation is None or annotation.person is None or annotation.person.experiment is None:
         return "BAD"
 
@@ -276,13 +163,13 @@ def data(annotationID=None, action=None):
         else:
             task = request.form["task"]
 
-        info = {i: {"notes": notes, "currentTask": task} for i in range(MIN_PERSON, MAX_PERSON)}
+        info = {i: {"notes": notes, "currentTask": task} for i in range(MIN_PERSON, exp.numPeople + 1)}
 
         try:
-            for i in range(MIN_PERSON, MAX_PERSON):
+            for i in range(MIN_PERSON, exp.numPeople + 1):
                 info[i].update({"engaged": False, "usingTablet": False})
 
-            for i in range(MIN_PERSON, MAX_PERSON):
+            for i in range(MIN_PERSON, exp.numPeople + 1):
                 if (str("person") + str(i)) in request.form.getlist("engagement[]"):
                     info[i]["engaged"] = True
                 else:
@@ -297,7 +184,7 @@ def data(annotationID=None, action=None):
             print "ERROR pushData form missing keys: %s" % e
             return "BAD"
 
-        for i in range(MIN_PERSON, MAX_PERSON):
+        for i in range(MIN_PERSON, exp.numPeople + 1):
             person = exp.people.filter_by(idInExperiment=i).first()
             # print person.__dict__
 
@@ -318,24 +205,24 @@ def setupExperiment():
             notes = ""
         else:
             notes = request.form["notes"]
-        if "timeGroupMins" in request.form and "timeGroupSecs" in request.form:
-            time_group = request.form["timeGroupMins"] + ":" + request.form["timeGroupSecs"]
-            time_group = datetime.datetime.strptime(time_group, "%H:%M").strftime("%I:%M %p")
-        elif "timeGroup" in request.form:
+
+        time_group = request.form["timeGroupMins"] + ":" + request.form["timeGroupSecs"]
+        if len(time_group) < 3:
             time_group = request.form["timeGroup"]
         else:
-            return redirect(url_for('index'), code=302)
+            time_group = datetime.datetime.strptime(time_group, "%H:%M").strftime("%I:%M %p")
 
         try:
-            exp = Experiment(request.form["experimentName"], time_group, request.form["group"],
-                             request.form["outlier"], request.form["friendship"], notes)
+            exp = Experiment(request.form["experimentName"], request.form["numPeople"],
+                             time_group, request.form["group"], request.form["outlier"],
+                             request.form["friendship"], notes)
         except KeyError, e:
             print "ERROR setupExperiment form missing keys: %s" % e
             return redirect(url_for('index'), code=302)
 
         db.session.add(exp)
 
-        for i in range(MIN_PERSON, MAX_PERSON):
+        for i in range(MIN_PERSON, exp.numPeople + 1):
             p = Person(request.form["person" + str(i) + "Gender"], request.form["person" + str(i) + "Age"], i, exp)
             db.session.add(p)
 
