@@ -6,16 +6,13 @@ import subprocess
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
 from tables import *
+from config import Production
 
 MIN_PERSON = 1
 MAX_PERSON = 6
 
 app = Flask(__name__)
-db_path = os.path.join(os.path.dirname(__file__), 'app.db')
-db_uri = 'sqlite:///{}'.format(db_path)
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_ECHO'] = False
+app.config.from_object(Production)
 
 db = SQLAlchemy(app)
 Base.metadata.create_all(db.engine)
@@ -187,9 +184,12 @@ def data(annotationID=None, action=None):
         for i in range(MIN_PERSON, exp.numPeople + 1):
             person = exp.people.filter_by(idInExperiment=i).first()
             # print person.__dict__
+            anno = db.session.query(Annotation).join(Person)\
+                             .filter(Annotation.annotatorName == annotation.annotatorName)\
+                             .filter(Person.idInExperiment == i).one()
 
             personStatus = PersonStatus(info[i]["engaged"], info[i]["usingTablet"], info[i]["currentTask"], person,
-                                        annotation)
+                                        anno)
             db.session.add(personStatus)
         db.session.commit()
 
