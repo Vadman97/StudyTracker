@@ -104,7 +104,7 @@ class PostExperimentData(Base):
     id = COL(INTEGER, primary_key=True)
     timestamp = COL(DATETIME, default=datetime.datetime.utcnow)
     annotationID = COL(INTEGER, sqa.ForeignKey('annotation.id'))
-    annotation = relationship('Annotation', backref=backref('postResponses', lazy='dynamic'))
+    annotation = relationship('Annotation', backref=backref('post_experiment_response', uselist=False))
 
     finalTime = COL(TIME)
     rankNum = COL(INTEGER)
@@ -124,3 +124,8 @@ class PostExperimentData(Base):
 
     def __repr__(self):
         return str(self.id)
+
+    @property
+    def rank(self):
+        return round(self.rankNum / float(self.rankDenom), 3)
+    
