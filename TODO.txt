@@ -3,6 +3,11 @@ keyboard shortcuts
 additional (Customizeable) fields
 
 frontend time sync (on page load get system time)
+    upon loading experiment.html, load the start time of experiment with respect to now
+    /data/<int:annotationID>/poll --> return json status and time of start if experiment running
+
+post experiment data - howMuchSolved
+    dont show the text field unless they chose False for solved
 ===========================BUGS==================================
 ===========================DONE==================================
 n number of people

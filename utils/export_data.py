@@ -1,5 +1,6 @@
 import csv
 import datetime
+import os
 import re
 from db_conn import DB
 from tables import *
@@ -7,12 +8,17 @@ from tables import *
 DATA_FREQUENCY = 2;
 DELTA_S = 1.0 / DATA_FREQUENCY;
 DELTA = datetime.timedelta(seconds=DELTA_S)
-EXP_CONFIG_PATH = 'experiment_configurations.csv'
+
+EXPORT_DATA_FOLDER = 'experimentData/'
+EXP_CONFIG_PATH = EXPORT_DATA_FOLDER + 'experiment_configurations.csv'
 
 fields = ['annotator', 'personID', 'age', 'gender', 'timestamp', 'engaged', 'usingTablet', 'currentTask']
 exp_config_fields = ['name', 'numPeople', 'timeGroup', 'group', 'outlier', 'friendship', 'notes']
 post_exp_fields = ['experimentName', 'finalTime', 'rank', 'solved', 'howMuchSolved', 'notes']
 db = DB()
+
+if not os.path.exists(EXPORT_DATA_FOLDER):
+  os.makedirs(EXPORT_DATA_FOLDER)
 
 with open(EXP_CONFIG_PATH, 'wb') as configfile:
   exp_config_writer = csv.DictWriter(configfile, fieldnames=exp_config_fields, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -30,7 +36,7 @@ with open(EXP_CONFIG_PATH, 'wb') as configfile:
     path = unicode(re.sub('[-\s]+', '-', path)) + '.csv'
 
     # for each experiment, populate the statuses at a constant rate
-    with open(path, 'wb') as csvfile:
+    with open(EXPORT_DATA_FOLDER + path, 'wb') as csvfile:
       writer = csv.DictWriter(csvfile, fieldnames=fields, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
       writer.writeheader()
       for person in exp.people.all():
@@ -38,7 +44,7 @@ with open(EXP_CONFIG_PATH, 'wb') as configfile:
 
           # write the annotators post-experiment status
           if annotation.post_experiment_response:
-            with open(path[:-4] + '_post_experiment.csv', 'wb') as post_exp_file:
+            with open(EXPORT_DATA_FOLDER + path[:-4] + '_post_experiment.csv', 'wb') as post_exp_file:
               post_exp_writer = csv.DictWriter(post_exp_file, fieldnames=post_exp_fields, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
               post_exp_writer.writeheader()
               data = {}
