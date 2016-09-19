@@ -1,0 +1,28 @@
+{
+  "name": "StudyTracker",
+  "homepage": "https://github.com/Vadman97/StudyTracker",
+  "authors": [
+    "Vadim Korolik <korolik@usc.edu>"
+  ],
+  "description": "A website annotation tool for use in the USC Interaction Robotics Lab for a user study project.",
+  "main": "main.py",
+  "keywords": [
+    "website",
+    "python",
+    "flask",
+    "annotation",
+    "tool"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.1.0"
+  }
+}

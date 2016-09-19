@@ -7,22 +7,12 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge;"/>
 	<link rel="shortcut icon" href=""/>
 
-	<!-- not compressed<link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet"/>-->
-	<!-- 
-		/static/bootstrap/css/bootstrap.min.css 
-		/static/bootstrap/css/bootstrap-theme.min.css
-		/static/css/initTheme.css
-		/static/jquery/jquery-2.2.3.js
-	-->
-
-	<link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-	<link href="{{ url_for('static', filename='bootstrap/css/bootstrap-theme.min.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='bootstrap/dist/css/bootstrap-theme.min.css') }}" rel="stylesheet">
 	<link href="{{ url_for('static', filename='css/theme.css') }}" rel="stylesheet">
 	
-	<script src="{{ url_for('static', filename='jquery/jquery-2.2.3.js') }}"> </script>
-
-	<script src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"></script>
-	<!-- <script src="{{ url_for('static', filename='bootstrap/js/npm.js') }}"></script> -->
+	<script src="{{ url_for('static', filename='jquery/dist/jquery.min.js') }}"> </script>
+	<script src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.js') }}"></script>
 	{% block js %}{% endblock %}
  
 	{% block head %}{% endblock %}
