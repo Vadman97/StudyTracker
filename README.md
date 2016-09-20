@@ -3,8 +3,9 @@ Study Tracker Website
 
 Description
 -----------------
-TODO
-Deployed on http://vadweb.us:8005
+A website annotation tool for use in the USC Interaction Robotics Lab for a user study project.
+Allows multiple annotators to track engagement statuses of multiple study participants.
+Demo deployed on http://vadweb.us:8005
 
 
 Running server
