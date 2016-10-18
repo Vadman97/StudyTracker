@@ -182,11 +182,11 @@ def data(annotationID=None, action=None):
             return "BAD"
 
         for i in range(MIN_PERSON, exp.numPeople + 1):
-            person = exp.people.filter_by(idInExperiment=i).first()
+            person = exp.people.filter(Person.idInExperiment == i).first()
             # print person.__dict__
             anno = db.session.query(Annotation).join(Person)\
                              .filter(Annotation.annotatorName == annotation.annotatorName)\
-                             .filter(Person.idInExperiment == i).one()
+                             .filter(Person.idInExperiment == i).first()
 
             personStatus = PersonStatus(info[i]["engaged"], info[i]["usingTablet"], info[i]["currentTask"], person,
                                         anno)
