@@ -14,6 +14,7 @@ Install dependencies
 1. ```sudo apt-get install -y python-pip && sudo pip install Flask && sudo pip install flask_sqlalchemy```
 2. ```sudo apt-get install -y npm```
 3. ```sudo npm install bower -g```
+
 In this directory
 4. ```bower install```
 5. ```python main.py```
