@@ -16,8 +16,8 @@ Install dependencies
 3. ```sudo npm install bower -g```
 
 In this directory
-4. ```bower install```
-5. ```python main.py```
+1. ```bower install```
+2. ```python main.py```
 
 
 Retrieving experiment data
